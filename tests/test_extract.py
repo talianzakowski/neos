@@ -76,6 +76,45 @@ class TestLoadNEOs(unittest.TestCase):
         self.assertEqual(neo.name, 'Adonis')
         self.assertEqual(neo.diameter, 0.6)
         self.assertEqual(neo.hazardous, True)
+    
+    def test_can_construct_neo_happy_path(self):
+        headers = ["pdes",  "name" ,                         "neo", "pha", "diameter"]
+        data =    ["12345", "\"   719 Albert (A911 TB)\"",   "Y",   "Y",   "1234.5"]
+
+        mock_data = zip(data, headers)
+        neo = NearEarthObject(mock_data)
+
+        self.assertEquals(neo.designation, "12345")
+        self.assertEquals(neo.name, "719 Albert (A911 TB)")
+        self.assertTrue(neo.hazardous)
+        self.assertEquals(neo.diameter, 1234.5)
+        self.assertEquals(neo.approaches, [])
+    
+    def test_can_construct_neo_happy_path_with_hazardous_false(self):
+        headers = ["pdes",  "name" ,                         "neo", "pha", "diameter"]
+        data =    ["12345", "\"   719 Albert (A911 TB)\"",   "Y",   "N",   "1234.5"]
+
+        mock_data = zip(data, headers)
+        neo = NearEarthObject(mock_data)
+
+        self.assertEquals(neo.designation, "12345")
+        self.assertEquals(neo.name, "719 Albert (A911 TB)")
+        self.assertFalse(neo.hazardous)
+        self.assertEquals(neo.diameter, 1234.5)
+        self.assertEquals(neo.approaches, [])
+
+    def test_can_construct_neo_happy_path_with_empty_diameter(self):
+        headers = ["pdes",  "name" ,                         "neo", "pha", "diameter"]
+        data =    ["12345", "\"   719 Albert (A911 TB)\"",   "Y",   "N",   ""]
+
+        mock_data = zip(data, headers)
+        neo = NearEarthObject(mock_data)
+
+        self.assertEquals(neo.designation, "12345")
+        self.assertEquals(neo.name, "719 Albert (A911 TB)")
+        self.assertFalse(neo.hazardous)
+        self.assertTrue(math.isnan(neo.diameter))
+        self.assertEquals(neo.approaches, [])
 
 
 class TestLoadApproaches(unittest.TestCase):
@@ -116,6 +155,8 @@ class TestLoadApproaches(unittest.TestCase):
         approach = self.get_first_approach_or_none()
         self.assertIsNotNone(approach)
         self.assertIsInstance(approach.velocity, float)
+    
+
 
 
 if __name__ == '__main__':
