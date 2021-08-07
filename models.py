@@ -18,7 +18,7 @@ quirks of the data set, such as missing names and unknown diameters.
 You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
-
+from constants import NEO_DIAMETER_FIELD, NEO_NAME_FIELD, NEO_PRIMARY_DESIGNATION_FIELD, NEO_HAZARD_FIELD
 
 class NearEarthObject:
     """A near-Earth object (NEO).
@@ -34,23 +34,55 @@ class NearEarthObject:
     """
     # TODO: How can you, and should you, change the arguments to this constructor?
     # If you make changes, be sure to update the comments in this file.
-    def __init__(self, **info):
+    def __init__(self, zipped_item):
         """Create a new `NearEarthObject`.
 
-        :param info: A dictionary of excess keyword arguments supplied to the constructor.
+        :param info: A zip object of data values [0] and respective column names [1]
         """
         # TODO: Assign information from the arguments passed to the constructor
         # onto attributes named `designation`, `name`, `diameter`, and `hazardous`.
         # You should coerce these values to their appropriate data type and
         # handle any edge cases, such as a empty name being represented by `None`
         # and a missing diameter being represented by `float('nan')`.
-        self.designation = ''
-        self.name = None
-        self.diameter = float('nan')
         self.hazardous = False
+        for item in zipped_item:
+            field = item[1]
+
+            if field == NEO_PRIMARY_DESIGNATION_FIELD:
+                self.designation = item[0]
+            elif field == NEO_NAME_FIELD:
+                name = item[0]
+                formatted_name = self.neaten_name(name)
+                print(formatted_name)
+                if len(formatted_name) == 0: # Ensure empty string is represented by None
+                    formatted_name = None
+                self.name = formatted_name
+            elif field == NEO_DIAMETER_FIELD:
+                diameter = item[0]
+                if len(diameter) == 0:
+                    diameter = float('nan')
+                self.diameter = float(diameter)
+            elif field == NEO_HAZARD_FIELD:
+                hazardous = item[0]
+
+                if hazardous.upper() == "Y":
+                    self.hazardous = True
+                else:
+                    self.hazardous - False
 
         # Create an empty initial collection of linked approaches.
         self.approaches = []
+
+    def neaten_name(self, name):
+        first = name.lstrip("\"")
+        second = first.rstrip("\"")
+        third = second.lstrip()
+        fourth = third.rstrip()
+
+        return fourth
+
+
+
 
     @property
     def fullname(self):
