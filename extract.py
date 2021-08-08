@@ -58,11 +58,33 @@ def load_neos(neo_csv_path):
     return neos
 
 
+def extract_json(cad_json_path):
+    
+    approaches = []
+
+    with open(cad_json_path) as json_file:
+        raw_approaches = json.load(json_file)
+        
+        count = int(raw_approaches['count'])
+        headers = raw_approaches['fields']
+        data = raw_approaches['data']
+
+        for x in range(count):
+            data_items = data[x]
+            raw_approach_data_item = zip(data_items, headers) # Tie data items to column names            
+            close_approach = CloseApproach(raw_approach_data_item) # Create CA object from data, headers object
+            approaches.append(close_approach)
+                
+        return approaches
+
+
 def load_approaches(cad_json_path):
     """Read close approach data from a JSON file.
 
-    :param neo_csv_path: A path to a JSON file containing data about close approaches.
+    :param cad_json_path: A path to a JSON file containing data about close approaches.
     :return: A collection of `CloseApproach`es.
     """
     # TODO: Load close approach data from the given JSON file.
-    return ()
+    approaches = extract_json(cad_json_path)
+
+    return approaches

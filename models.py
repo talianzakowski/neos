@@ -18,7 +18,7 @@ quirks of the data set, such as missing names and unknown diameters.
 You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
-from constants import NEO_DIAMETER_FIELD, NEO_NAME_FIELD, NEO_PRIMARY_DESIGNATION_FIELD, NEO_HAZARD_FIELD
+from constants import CA_ABSOLUTE_MAGNITUDE, CA_APPROACH_DISTANCE_AU, CA_APPROACH_DISTANCE_MAX_AU, CA_APPROACH_DISTANCE_MIN_AU, CA_ORBIT_ID, CA_PRIMARY_DESIGNATION_FIELD, CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS, CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS, CA_THREE_SIGMA_TIME_UNCERTAINTY, CA_TIME_OF_CLOSE_APPROACH_CD_FORMATTED, CA_TIME_OF_CLOSE_APPROACH_JD, NEO_DIAMETER_FIELD, NEO_NAME_FIELD, NEO_PRIMARY_DESIGNATION_FIELD, NEO_HAZARD_FIELD
 
 class NearEarthObject:
     """A near-Earth object (NEO).
@@ -34,16 +34,15 @@ class NearEarthObject:
     """
     # TODO: How can you, and should you, change the arguments to this constructor?
     # If you make changes, be sure to update the comments in this file.
+    #
+    # Yes, I changed the siganture to make the class more testable.
+
     def __init__(self, zipped_item):
         """Create a new `NearEarthObject`.
 
         :param info: A zip object of data values [0] and respective column names [1]
         """
-        # TODO: Assign information from the arguments passed to the constructor
-        # onto attributes named `designation`, `name`, `diameter`, and `hazardous`.
-        # You should coerce these values to their appropriate data type and
-        # handle any edge cases, such as a empty name being represented by `None`
-        # and a missing diameter being represented by `float('nan')`.
+
         self.hazardous = False
         for item in zipped_item:
             field = item[1]
@@ -53,7 +52,6 @@ class NearEarthObject:
             elif field == NEO_NAME_FIELD:
                 name = item[0]
                 formatted_name = self.neaten_name(name)
-                print(formatted_name)
                 if len(formatted_name) == 0: # Ensure empty string is represented by None
                     formatted_name = None
                 self.name = formatted_name
@@ -82,20 +80,17 @@ class NearEarthObject:
         return fourth
 
 
-
-
     @property
     def fullname(self):
         """Return a representation of the full name of this NEO."""
-        # TODO: Use self.designation and self.name to build a fullname for this object.
-        return ''
+        return self.designation + "::" + self.name
+
 
     def __str__(self):
         """Return `str(self)`."""
-        # TODO: Use this object's attributes to return a human-readable string representation.
-        # The project instructions include one possibility. Peek at the __repr__
-        # method for examples of advanced string formatting.
-        return f"A NearEarthObject ..."
+
+        return f"NEO: Name: {self.name} Designation: {self.designation} Diameter: {self.diameter} Hazardous: {self.hazardous}"
+
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
@@ -118,19 +113,49 @@ class CloseApproach:
     """
     # TODO: How can you, and should you, change the arguments to this constructor?
     # If you make changes, be sure to update the comments in this file.
-    def __init__(self, **info):
+    def __init__(self, close_approach):
         """Create a new `CloseApproach`.
 
-        :param info: A dictionary of excess keyword arguments supplied to the constructor.
+        :param info: A zipped data, header iterable representing a JSON close approach
         """
-        # TODO: Assign information from the arguments passed to the constructor
-        # onto attributes named `_designation`, `time`, `distance`, and `velocity`.
-        # You should coerce these values to their appropriate data type and handle any edge cases.
-        # The `cd_to_datetime` function will be useful.
-        self._designation = ''
-        self.time = None  # TODO: Use the cd_to_datetime function for this attribute.
-        self.distance = 0.0
-        self.velocity = 0.0
+
+        self.magnitude = 0.0
+
+        for pair in close_approach:
+            data = pair[0]
+            header = pair[1]
+
+            if header == CA_PRIMARY_DESIGNATION_FIELD:
+                self._designation = data
+            elif header == CA_ORBIT_ID:
+                self.orbit_id = data
+            elif header == CA_TIME_OF_CLOSE_APPROACH_JD:
+                self.jd_time = float(data)
+            elif header == CA_TIME_OF_CLOSE_APPROACH_CD_FORMATTED:
+                self.time = cd_to_datetime(data)
+            elif header == CA_APPROACH_DISTANCE_AU:
+                self.distance = float(data)
+            elif header == CA_APPROACH_DISTANCE_MIN_AU:
+                self.approach_distance_min = float(data)
+            elif header == CA_APPROACH_DISTANCE_MAX_AU:
+                if len(data) == 0 or data == None:
+                    data = 0.0
+                self.approach_distance_max = float(data)
+            elif header == CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS:
+                self.velocity = float(data)
+            elif header == CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS:
+                self.velocity_to_massless_body = float(data)
+            elif header == CA_THREE_SIGMA_TIME_UNCERTAINTY:
+                self.time_uncertainty = data
+            elif header == CA_ABSOLUTE_MAGNITUDE:
+                if data != None:
+                    self.magnitude == float(data)
+                else:
+                    self.magnitude = 0.0
+
+        # Ensure velocity is always populated!
+        if not hasattr(self, "velocity"):
+            self.velocity = float(0.0)
 
         # Create an attribute for the referenced NEO, originally None.
         self.neo = None
