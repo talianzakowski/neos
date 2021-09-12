@@ -41,9 +41,50 @@ class NEODatabase:
         self._neos = neos
         self._approaches = approaches
 
-        # TODO: What additional auxiliary data structures will be useful?
+        # What additional auxiliary data structures will be useful?
+        #
+        # Creation of data structures for fast look up of an entry based on...
+        # ...designation
+        self.designation_index_map = self.create_neo_designation_index_map()
+        # ...and name
+        self.name_to_index_map = self.create_neo_name_index_map()
 
-        # TODO: Link together the NEOs and their close approaches.
+        for approach in self._approaches:
+            approach_designation = approach._designation
+            neo = self.get_neo_by_designation(approach_designation)
+
+            if neo: # Found correspond neo
+                approach.neo = neo
+                neo.approaches.append(approach)
+
+
+    def create_neo_designation_index_map(self):
+        """
+        Method to create a designation to entry index mapping for neos to enable faster searching due
+        to having a mapping where the designation will act as key and the value the index
+        into the _neos data list, which can then be looked up
+        """
+
+        designation_to_index_map = {}
+
+        for idx, neo in enumerate(self._neos):
+            designation_to_index_map[neo.designation] = idx
+
+        return designation_to_index_map
+
+    def create_neo_name_index_map(self):
+        """
+        Method to create a name to entry index mapping for neos to enable faster searching due
+        to having a mapping where the designation will act as key and the value the index
+        into the _neos data list, which can then be looked up
+        """
+
+        name_to_index_map = {}
+
+        for idx, neo in enumerate(self._neos):
+            name_to_index_map[neo.name] = idx
+        
+        return name_to_index_map
 
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
@@ -58,8 +99,14 @@ class NEODatabase:
         :param designation: The primary designation of the NEO to search for.
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
-        # TODO: Fetch an NEO by its primary designation.
-        return None
+
+        data_index = self.designation_index_map.get(designation, None)
+        
+        if data_index is not None:
+            return self._neos[data_index]
+        else:
+            return None
+
 
     def get_neo_by_name(self, name):
         """Find and return an NEO by its name.
@@ -75,8 +122,12 @@ class NEODatabase:
         :param name: The name, as a string, of the NEO to search for.
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
-        # TODO: Fetch an NEO by its name.
-        return None
+        data_index = self.name_to_index_map.get(name, None)
+
+        if data_index is not None:
+            return self._neos[data_index]
+        else:
+            return None
 
     def query(self, filters=()):
         """Query close approaches to generate those that match a collection of filters.
@@ -92,6 +143,21 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
-        # TODO: Generate `CloseApproach` objects that match all of the filters.
-        for approach in self._approaches:
-            yield approach
+
+
+        if len(filters) == 0:
+            for approach in self._approaches:
+                yield approach
+
+        for approach in self._approaches:           
+            passes_filter = False
+            for filter in filters:
+                if filter(approach):
+                    passes_filter = True
+                    continue
+                else:
+                    passes_filter = False
+                    break
+            
+            if passes_filter:
+                yield approach

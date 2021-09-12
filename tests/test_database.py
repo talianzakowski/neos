@@ -113,6 +113,9 @@ class TestDatabase(unittest.TestCase):
     def test_get_neo_by_name_missing(self):
         nonexistent = self.db.get_neo_by_name('not-real-name')
         self.assertIsNone(nonexistent)
+    
+    def test_neo_to_approach_linkage(self):
+        pass
 
 
 if __name__ == '__main__':

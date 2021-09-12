@@ -18,7 +18,7 @@ quirks of the data set, such as missing names and unknown diameters.
 You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
-from constants import CA_ABSOLUTE_MAGNITUDE, CA_APPROACH_DISTANCE_AU, CA_APPROACH_DISTANCE_MAX_AU, CA_APPROACH_DISTANCE_MIN_AU, CA_ORBIT_ID, CA_PRIMARY_DESIGNATION_FIELD, CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS, CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS, CA_THREE_SIGMA_TIME_UNCERTAINTY, CA_TIME_OF_CLOSE_APPROACH_CD_FORMATTED, CA_TIME_OF_CLOSE_APPROACH_JD, NEO_DIAMETER_FIELD, NEO_NAME_FIELD, NEO_PRIMARY_DESIGNATION_FIELD, NEO_HAZARD_FIELD
+from constants import CA_ABSOLUTE_MAGNITUDE, CA_APPROACH_DISTANCE_AU, CA_APPROACH_DISTANCE_MAX_AU, CA_APPROACH_DISTANCE_MIN_AU, CA_ORBIT_ID, CA_PRIMARY_DESIGNATION_FIELD, CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS, CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS, CA_THREE_SIGMA_TIME_UNCERTAINTY, CA_TIME_OF_CLOSE_APPROACH_CD_FORMATTED, CA_TIME_OF_CLOSE_APPROACH_JD, NEO_DIAMETER_FIELD, NEO_ID_FIELD, NEO_NAME_FIELD, NEO_PRIMARY_DESIGNATION_FIELD, NEO_HAZARD_FIELD
 
 class NearEarthObject:
     """A near-Earth object (NEO).
@@ -32,10 +32,10 @@ class NearEarthObject:
     initialized to an empty collection, but eventually populated in the
     `NEODatabase` constructor.
     """
-    # TODO: How can you, and should you, change the arguments to this constructor?
-    # If you make changes, be sure to update the comments in this file.
+    # Q: How can you, and should you, change the arguments to this constructor?
+    #    If you make changes, be sure to update the comments in this file.
     #
-    # Yes, I changed the siganture to make the class more testable.
+    # A: Yes, I changed the siganture to make the class more testable.
 
     def __init__(self, zipped_item):
         """Create a new `NearEarthObject`.
@@ -45,23 +45,26 @@ class NearEarthObject:
 
         self.hazardous = False
         for item in zipped_item:
+            data = item[0]
             field = item[1]
 
-            if field == NEO_PRIMARY_DESIGNATION_FIELD:
-                self.designation = item[0]
+            if field == NEO_ID_FIELD:
+                self.id = data
+            elif field == NEO_PRIMARY_DESIGNATION_FIELD:
+                self.designation = data
             elif field == NEO_NAME_FIELD:
-                name = item[0]
+                name = data
                 formatted_name = self.neaten_name(name)
                 if len(formatted_name) == 0: # Ensure empty string is represented by None
                     formatted_name = None
                 self.name = formatted_name
             elif field == NEO_DIAMETER_FIELD:
-                diameter = item[0]
+                diameter = data
                 if len(diameter) == 0:
                     diameter = float('nan')
                 self.diameter = float(diameter)
             elif field == NEO_HAZARD_FIELD:
-                hazardous = item[0]
+                hazardous = data
 
                 if hazardous.upper() == "Y":
                     self.hazardous = True
@@ -111,8 +114,7 @@ class CloseApproach:
     private attribute, but the referenced NEO is eventually replaced in the
     `NEODatabase` constructor.
     """
-    # TODO: How can you, and should you, change the arguments to this constructor?
-    # If you make changes, be sure to update the comments in this file.
+
     def __init__(self, close_approach):
         """Create a new `CloseApproach`.
 
@@ -138,12 +140,16 @@ class CloseApproach:
             elif header == CA_APPROACH_DISTANCE_MIN_AU:
                 self.approach_distance_min = float(data)
             elif header == CA_APPROACH_DISTANCE_MAX_AU:
-                if len(data) == 0 or data == None:
+                if data == None or len(data) == 0:
                     data = 0.0
                 self.approach_distance_max = float(data)
             elif header == CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS:
+                if data == None or len(data) == 0:
+                    data = 0.0
                 self.velocity = float(data)
             elif header == CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS:
+                if data == None or len(data) == 0:
+                    data = 0.0
                 self.velocity_to_massless_body = float(data)
             elif header == CA_THREE_SIGMA_TIME_UNCERTAINTY:
                 self.time_uncertainty = data
@@ -183,7 +189,8 @@ class CloseApproach:
         # TODO: Use this object's attributes to return a human-readable string representation.
         # The project instructions include one possibility. Peek at the __repr__
         # method for examples of advanced string formatting.
-        return f"A CloseApproach ..."
+
+        return f"CloseApproach Velocity: {self.velocity} km/h Distance: {self.distance} AUs {self.time_str} Diameter: "
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
