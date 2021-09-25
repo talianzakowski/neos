@@ -127,7 +127,7 @@ class TestWriteToCSV(unittest.TestCase):
         except csv.Error as err:
             raise self.failureException("write_to_csv produced an invalid CSV format.") from err
 
-        fieldnames = ('datetime_utc', 'distance_au', 'velocity_km_s', 'designation', 'name', 'diameter_km', 'potentially_hazardous')
+        fieldnames = ('datetime_utc', 'distance_au', 'velocity_km_s', 'designation', 'name', 'diameter_km', 'potentially_hazardous', '')
         self.assertGreater(len(rows), 0)
         self.assertSetEqual(set(fieldnames), set(rows[0].keys()))
 

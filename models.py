@@ -100,6 +100,15 @@ class NearEarthObject:
         return (f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
                 f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
 
+    def serialize(self):
+        results = {}
+
+        results["designation"] = str(self.designation)
+        results["name"] = str(self.name)
+        results["diameter_km"] = str(self.diameter)
+        results["potentially_hazardous"] = str(self.hazardous)
+
+        return results
 
 class CloseApproach:
     """A close approach to Earth by an NEO.
@@ -190,9 +199,44 @@ class CloseApproach:
         # The project instructions include one possibility. Peek at the __repr__
         # method for examples of advanced string formatting.
 
-        return f"CloseApproach Velocity: {self.velocity} km/h Distance: {self.distance} AUs {self.time_str} Diameter: "
+        return f"CloseApproach Velocity: {self.velocity} km/h Distance: {self.distance} AUs {self.time_str} NEO: {self.neo}"
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
                 f"velocity={self.velocity:.2f}, neo={self.neo!r})")
+
+    def serialize(self):
+        """Return a dictionary representation of the Close Approach"""
+
+        approach = {}
+
+        approach["datetime_utc"] = datetime_to_str(self.time)
+        approach["distance_au"] = self.distance
+        approach["velocity_km_s"] = self.velocity
+        approach["designation"] = self._designation
+        
+        if self.neo:
+            approach["neo"] = self.neo
+            approach["name"] = self.neo.name
+            if hasattr(self.neo, "name") and self.neo.name != None:
+                approach["name"] = self.neo.name
+            else:
+                approach["name"] = ""
+        else:
+            approach["name"] = ""
+
+
+        if self.neo:
+            approach["diameter"] = self.neo.diameter
+        else:
+            approach["diameter"] = "nan"
+        
+        if self.neo:
+            approach["hazardous"] = str(self.neo.hazardous)
+        else:
+            approach["hazardous"] = "False"
+
+        return approach
+
+    
