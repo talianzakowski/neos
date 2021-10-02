@@ -14,13 +14,10 @@ the supplied `CloseApproach`.
 The `limit` function simply limits the maximum number of values produced by an
 iterator.
 
-You'll edit this file in Tasks 3a and 3c.
 """
 import operator
-import database
 import math
 import itertools
-from datetime import timedelta
 
 
 class UnsupportedCriterionError(NotImplementedError):
@@ -196,7 +193,7 @@ def create_filters(
         diamax_filter = DiameterFilter(operator.le, diameter_max)
         filters.append(diamax_filter)
 
-    if hazardous != None:
+    if hazardous is not None:
         hazardous_filter = HazardousFilter(operator.eq, hazardous)
         filters.append(hazardous_filter)
 
@@ -225,7 +222,7 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
 
-    if n == 0 or n == None:
+    if n == 0 or n is None:
         return iterator
     else:
         return itertools.islice(iterator, n)

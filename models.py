@@ -15,7 +15,6 @@ The functions that construct these objects use information extracted from the
 data files from NASA, so these objects should be able to handle all of the
 quirks of the data set, such as missing names and unknown diameters.
 
-You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
 from constants import (
@@ -111,16 +110,25 @@ class NearEarthObject:
     def __str__(self):
         """Return `str(self)`."""
 
-        return f"NEO: Name: {self.name} Designation: {self.designation} Diameter: {self.diameter} Hazardous: {self.hazardous}"
+        return f"NEO: Name: {self.name} Designation: {self.designation} \
+                 Diameter: {self.diameter} Hazardous: {self.hazardous}"
 
     def __repr__(self):
-        """Return `repr(self)`, a computer-readable string representation of this object."""
+        """Return `repr(self)`, a computer-readable string representation
+           of this object.
+        """
         return (
-            f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
+            f"NearEarthObject(designation={self.designation!r},  \
+              name={self.name!r}, "
             f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})"
         )
 
     def serialize(self):
+        """
+        Return a map of relevant data items for the output CSV and JSON
+
+        :return Map of this NEO coerced into strings
+        """
         results = {}
 
         results["designation"] = str(self.designation)
@@ -170,21 +178,21 @@ class CloseApproach:
             elif header == CA_APPROACH_DISTANCE_MIN_AU:
                 self.approach_distance_min = float(data)
             elif header == CA_APPROACH_DISTANCE_MAX_AU:
-                if data == None or len(data) == 0:
+                if data is None or len(data) == 0:
                     data = 0.0
                 self.approach_distance_max = float(data)
             elif header == CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS:
-                if data == None or len(data) == 0:
+                if data is None or len(data) == 0:
                     data = 0.0
                 self.velocity = float(data)
             elif header == CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS:
-                if data == None or len(data) == 0:
+                if data is None or len(data) == 0:
                     data = 0.0
                 self.velocity_to_massless_body = float(data)
             elif header == CA_THREE_SIGMA_TIME_UNCERTAINTY:
                 self.time_uncertainty = data
             elif header == CA_ABSOLUTE_MAGNITUDE:
-                if data != None:
+                if data is not None:
                     self.magnitude == float(data)
                 else:
                     self.magnitude = 0.0
@@ -209,24 +217,20 @@ class CloseApproach:
         formatted string that can be used in human-readable representations and
         in serialization to CSV and JSON files.
         """
-        # TODO: Use this object's `.time` attribute and the `datetime_to_str` function to
-        # build a formatted representation of the approach time.
-        # TODO: Use self.designation and self.name to build a fullname for this object.
-        return ""
+
+        return datetime_to_str(self.time)
 
     def __str__(self):
         """Return `str(self)`."""
-        # TODO: Use this object's attributes to return a human-readable string representation.
-        # The project instructions include one possibility. Peek at the __repr__
-        # method for examples of advanced string formatting.
 
         return f"CloseApproach Velocity: {self.velocity} km/h Distance: {self.distance} AUs {self.time_str} NEO: {self.neo}"
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (
-            f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
-            f"velocity={self.velocity:.2f}, neo={self.neo!r})"
+            f"CloseApproach(time={self.time_str!r},\
+                            distance={self.distance:.2f}, "\
+                            f"velocity={self.velocity:.2f}, neo={self.neo!r})"
         )
 
     def serialize(self):
@@ -242,7 +246,7 @@ class CloseApproach:
         if self.neo:
             approach["neo"] = self.neo
             approach["name"] = self.neo.name
-            if hasattr(self.neo, "name") and self.neo.name != None:
+            if hasattr(self.neo, "name") and self.neo.name is not None:
                 approach["name"] = self.neo.name
             else:
                 approach["name"] = ""
