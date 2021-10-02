@@ -53,7 +53,7 @@ class NearEarthObject:
     # Q: How can you, and should you, change the arguments to this constructor?
     #    If you make changes, be sure to update the comments in this file.
     #
-    # A: Yes, I changed the siganture to make the class more testable.
+    # A: Yes, I changed the signature to make the class more testable.
 
     def __init__(self, zipped_item):
         """Create a new `NearEarthObject`.
