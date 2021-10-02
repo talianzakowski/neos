@@ -10,21 +10,29 @@ extension determines which of these functions is used.
 
 You'll edit this file in Part 4.
 """
-import csv
 import json
 
 
 def write_to_csv(results, filename):
     """Write an iterable of `CloseApproach` objects to a CSV file.
 
-    The precise output specification is in `README.md`. Roughly, each output row
-    corresponds to the information in a single close approach from the `results`
-    stream and its associated near-Earth object.
+    The precise output specification is in `README.md`. Roughly, each 
+    output row corresponds to the information in a single close approach 
+    from the `results` stream and its associated near-Earth object.
 
     :param results: An iterable of `CloseApproach` objects.
-    :param filename: A Path-like object pointing to where the data should be saved.
+    :param filename: A Path-like object pointing to where the data should 
+    be saved.
     """
-    fieldnames = ('datetime_utc', 'distance_au', 'velocity_km_s', 'designation', 'name', 'diameter_km', 'potentially_hazardous')
+    fieldnames = (
+        "datetime_utc",
+        "distance_au",
+        "velocity_km_s",
+        "designation",
+        "name",
+        "diameter_km",
+        "potentially_hazardous",
+    )
 
     with open(filename, "x+") as f:
         header_line = ",".join(fieldnames) + ",\n"
@@ -34,7 +42,7 @@ def write_to_csv(results, filename):
             data = approach.serialize()
 
             result = ""
-            
+
             result += str(data["datetime_utc"]) + ","
             result += str(data["distance_au"]) + ","
             result += str(data["velocity_km_s"]) + ","
@@ -60,24 +68,24 @@ def write_to_json(results, filename):
     :param filename: A Path-like object pointing to where the data should be saved.
     """
     with open(filename, "w") as f:
-        #f.write("[\n")
-
         entries = []
         for result in results:
             approach = result.serialize()
             entry = extract_data_as_map(approach)
             entries.append(entry)
-        
-        f.write(json.dumps(entries, sort_keys=True, indent=2, separators=(',', ': ')))
-        
-        #f.write("]")
+
+        f.write(json.dumps(entries, sort_keys=True, indent=2, separators=(",", ": ")))
 
 
 def extract_neo_data(neo):
+    """Extract data relevant for a neo
 
+    :param neo: A neo to interrogate for data
+    :return The neo result as a dictionary sready to be converted to JSON
+    """
     result = {}
     result["designation"] = neo["designation"]
-    if neo["name"] != 'None':
+    if neo["name"] != "None":
         result["name"] = neo["name"]
     else:
         result["name"] = ""
@@ -88,6 +96,13 @@ def extract_neo_data(neo):
 
 
 def extract_data_as_map(approach):
+    """
+    Extract a Close Approach as a dictionary of relevent data
+    items, including neo if available.
+
+    :param A close approach to parse
+    :return A dictionary representing a close approach and neo if avilable
+    """
 
     entry = {}
     entry["datetime_utc"] = str(approach["datetime_utc"])
@@ -101,7 +116,7 @@ def extract_data_as_map(approach):
         neo = None
 
     if neo:
-        neo_data =  approach["neo"].serialize()
+        neo_data = approach["neo"].serialize()
         neo = extract_neo_data(neo_data)
 
     entry["neo"] = neo

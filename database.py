@@ -12,6 +12,7 @@ data on NEOs and close approaches extracted by `extract.load_neos` and
 You'll edit this file in Tasks 2 and 3.
 """
 
+
 class NEODatabase:
     """A database of near-Earth objects and their close approaches.
 
@@ -20,6 +21,7 @@ class NEODatabase:
     help fetch NEOs by primary designation or by name and to help speed up
     querying for close approaches that match criteria.
     """
+
     def __init__(self, neos, approaches):
         """Create a new `NEODatabase`.
 
@@ -53,10 +55,9 @@ class NEODatabase:
             approach_designation = approach._designation
             neo = self.get_neo_by_designation(approach_designation)
 
-            if neo: # Found correspond neo
+            if neo:  # Found correspond neo
                 approach.neo = neo
                 neo.approaches.append(approach)
-
 
     def create_neo_designation_index_map(self):
         """
@@ -83,7 +84,7 @@ class NEODatabase:
 
         for idx, neo in enumerate(self._neos):
             name_to_index_map[neo.name] = idx
-        
+
         return name_to_index_map
 
     def get_neo_by_designation(self, designation):
@@ -101,12 +102,11 @@ class NEODatabase:
         """
 
         data_index = self.designation_index_map.get(designation, None)
-        
+
         if data_index is not None:
             return self._neos[data_index]
         else:
             return None
-
 
     def get_neo_by_name(self, name):
         """Find and return an NEO by its name.
@@ -144,12 +144,11 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
 
-
         if len(filters) == 0:
             for approach in self._approaches:
                 yield approach
 
-        for approach in self._approaches:           
+        for approach in self._approaches:
             passes_filter = False
             for filter in filters:
                 if filter(approach):
@@ -158,6 +157,6 @@ class NEODatabase:
                 else:
                     passes_filter = False
                     break
-            
+
             if passes_filter:
                 yield approach

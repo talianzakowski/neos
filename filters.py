@@ -42,6 +42,7 @@ class AttributeFilter:
     Concrete subclasses can override the `get` classmethod to provide custom
     behavior to fetch a desired attribute from the given `CloseApproach`.
     """
+
     def __init__(self, op, value):
         """Construct a new `AttributeFilter` from an binary predicate and a reference value.
 
@@ -75,34 +76,44 @@ class AttributeFilter:
     def __repr__(self):
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
+
 class ApproachVelocityFilter(AttributeFilter):
+    """A filter to allow approach velocity filtering"""
 
     @classmethod
     def get(cls, approach):
         return approach.velocity
 
+
 class DistanceFilter(AttributeFilter):
+    """A filter to allow approach distance filtering"""
 
     @classmethod
     def get(cls, approach):
         return approach.distance
 
+
 class DiameterFilter(AttributeFilter):
+    """A filter to allow approach distance filtering"""
 
     @classmethod
     def get(cls, approach):
         if math.isnan(approach.neo.diameter):
-            return float('nan')
+            return float("nan")
         else:
-            return approach.neo.diameter 
+            return approach.neo.diameter
+
 
 class HazardousFilter(AttributeFilter):
+    """A filter to allow approach neo is harardous filtering"""
 
     @classmethod
     def get(cls, approach):
         return approach.neo.hazardous
 
+
 class AbsoluteDateFilter(AttributeFilter):
+    """A filter to allow absolute approach date filtering"""
 
     @classmethod
     def get(cls, approach):
@@ -110,17 +121,25 @@ class AbsoluteDateFilter(AttributeFilter):
 
 
 class DateFilter(AttributeFilter):
-    
+    """A filter to allow approach date filtering"""
+
     @classmethod
     def get(cls, approach):
         return approach.time.date()
 
 
-def create_filters(date=None, start_date=None, end_date=None,
-                   distance_min=None, distance_max=None,
-                   velocity_min=None, velocity_max=None,
-                   diameter_min=None, diameter_max=None,
-                   hazardous=None):
+def create_filters(
+    date=None,
+    start_date=None,
+    end_date=None,
+    distance_min=None,
+    distance_max=None,
+    velocity_min=None,
+    velocity_max=None,
+    diameter_min=None,
+    diameter_max=None,
+    hazardous=None,
+):
     """Create a collection of filters from user-specified criteria.
 
     Each of these arguments is provided by the main module with a value from the
@@ -150,9 +169,9 @@ def create_filters(date=None, start_date=None, end_date=None,
     :param hazardous: Whether the NEO of a matching `CloseApproach` is potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    # TODO: Decide how you will represent your filters.
     filters = []
 
+    # Build up a collection of relevant filters...
     if velocity_min:
         vmin_filter = ApproachVelocityFilter(operator.ge, velocity_min)
         filters.append(vmin_filter)
@@ -164,7 +183,7 @@ def create_filters(date=None, start_date=None, end_date=None,
     if distance_min:
         dmin_filter = DistanceFilter(operator.ge, distance_min)
         filters.append(dmin_filter)
-    
+
     if distance_max:
         dmax_filter = DistanceFilter(operator.le, distance_max)
         filters.append(dmax_filter)
@@ -188,7 +207,7 @@ def create_filters(date=None, start_date=None, end_date=None,
     if start_date:
         start_date_filter = DateFilter(operator.ge, start_date)
         filters.append(start_date_filter)
-    
+
     if end_date:
         end_date_filter = DateFilter(operator.le, end_date)
         filters.append(end_date_filter)
@@ -206,7 +225,7 @@ def limit(iterator, n=None):
     :yield: The first (at most) `n` values from the iterator.
     """
 
-    if n==0 or n == None:
+    if n == 0 or n == None:
         return iterator
     else:
         return itertools.islice(iterator, n)

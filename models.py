@@ -18,7 +18,25 @@ quirks of the data set, such as missing names and unknown diameters.
 You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
-from constants import CA_ABSOLUTE_MAGNITUDE, CA_APPROACH_DISTANCE_AU, CA_APPROACH_DISTANCE_MAX_AU, CA_APPROACH_DISTANCE_MIN_AU, CA_ORBIT_ID, CA_PRIMARY_DESIGNATION_FIELD, CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS, CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS, CA_THREE_SIGMA_TIME_UNCERTAINTY, CA_TIME_OF_CLOSE_APPROACH_CD_FORMATTED, CA_TIME_OF_CLOSE_APPROACH_JD, NEO_DIAMETER_FIELD, NEO_ID_FIELD, NEO_NAME_FIELD, NEO_PRIMARY_DESIGNATION_FIELD, NEO_HAZARD_FIELD
+from constants import (
+    CA_ABSOLUTE_MAGNITUDE,
+    CA_APPROACH_DISTANCE_AU,
+    CA_APPROACH_DISTANCE_MAX_AU,
+    CA_APPROACH_DISTANCE_MIN_AU,
+    CA_ORBIT_ID,
+    CA_PRIMARY_DESIGNATION_FIELD,
+    CA_RELATIVE_VELOCITY_TO_APPROACH_BODY_KMS,
+    CA_RELATIVE_VELOCITY_TO_MASSLESS_BODY_KMS,
+    CA_THREE_SIGMA_TIME_UNCERTAINTY,
+    CA_TIME_OF_CLOSE_APPROACH_CD_FORMATTED,
+    CA_TIME_OF_CLOSE_APPROACH_JD,
+    NEO_DIAMETER_FIELD,
+    NEO_ID_FIELD,
+    NEO_NAME_FIELD,
+    NEO_PRIMARY_DESIGNATION_FIELD,
+    NEO_HAZARD_FIELD,
+)
+
 
 class NearEarthObject:
     """A near-Earth object (NEO).
@@ -32,6 +50,7 @@ class NearEarthObject:
     initialized to an empty collection, but eventually populated in the
     `NEODatabase` constructor.
     """
+
     # Q: How can you, and should you, change the arguments to this constructor?
     #    If you make changes, be sure to update the comments in this file.
     #
@@ -55,13 +74,15 @@ class NearEarthObject:
             elif field == NEO_NAME_FIELD:
                 name = data
                 formatted_name = self.neaten_name(name)
-                if len(formatted_name) == 0: # Ensure empty string is represented by None
+                if (
+                    len(formatted_name) == 0
+                ):  # Ensure empty string is represented by None
                     formatted_name = None
                 self.name = formatted_name
             elif field == NEO_DIAMETER_FIELD:
                 diameter = data
                 if len(diameter) == 0:
-                    diameter = float('nan')
+                    diameter = float("nan")
                 self.diameter = float(diameter)
             elif field == NEO_HAZARD_FIELD:
                 hazardous = data
@@ -75,30 +96,29 @@ class NearEarthObject:
         self.approaches = []
 
     def neaten_name(self, name):
-        first = name.lstrip("\"")
-        second = first.rstrip("\"")
+        first = name.lstrip('"')
+        second = first.rstrip('"')
         third = second.lstrip()
         fourth = third.rstrip()
 
         return fourth
-
 
     @property
     def fullname(self):
         """Return a representation of the full name of this NEO."""
         return self.designation + "::" + self.name
 
-
     def __str__(self):
         """Return `str(self)`."""
 
         return f"NEO: Name: {self.name} Designation: {self.designation} Diameter: {self.diameter} Hazardous: {self.hazardous}"
 
-
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
-        return (f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
-                f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
+        return (
+            f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
+            f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})"
+        )
 
     def serialize(self):
         results = {}
@@ -109,6 +129,7 @@ class NearEarthObject:
         results["potentially_hazardous"] = str(self.hazardous)
 
         return results
+
 
 class CloseApproach:
     """A close approach to Earth by an NEO.
@@ -191,7 +212,7 @@ class CloseApproach:
         # TODO: Use this object's `.time` attribute and the `datetime_to_str` function to
         # build a formatted representation of the approach time.
         # TODO: Use self.designation and self.name to build a fullname for this object.
-        return ''
+        return ""
 
     def __str__(self):
         """Return `str(self)`."""
@@ -203,8 +224,10 @@ class CloseApproach:
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
-        return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
-                f"velocity={self.velocity:.2f}, neo={self.neo!r})")
+        return (
+            f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
+            f"velocity={self.velocity:.2f}, neo={self.neo!r})"
+        )
 
     def serialize(self):
         """Return a dictionary representation of the Close Approach"""
@@ -215,7 +238,7 @@ class CloseApproach:
         approach["distance_au"] = self.distance
         approach["velocity_km_s"] = self.velocity
         approach["designation"] = self._designation
-        
+
         if self.neo:
             approach["neo"] = self.neo
             approach["name"] = self.neo.name
@@ -226,17 +249,14 @@ class CloseApproach:
         else:
             approach["name"] = ""
 
-
         if self.neo:
             approach["diameter"] = self.neo.diameter
         else:
             approach["diameter"] = "nan"
-        
+
         if self.neo:
             approach["hazardous"] = str(self.neo.hazardous)
         else:
             approach["hazardous"] = "False"
 
         return approach
-
-    
