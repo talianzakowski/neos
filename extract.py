@@ -18,7 +18,14 @@ from models import NearEarthObject, CloseApproach
 
 
 def extract_headers(neo_csv_path):
+    """Extract header from the CSV file.
 
+    Args:
+        neo_csv_path: The location of the neo csv datafile.
+
+    Returns:
+        A list of headers from the csv file.
+    """
     with open(neo_csv_path) as file:
         line = file.readline()
         headers = line.split(",")
@@ -31,7 +38,6 @@ def extract_data(headers, neo_csv_file):
     :param headers: A list of strings of header names
     :param neo_csv_file: A path to a CSV file containing data about near-Earth objects.
     """
-
     neos = []
 
     with open(neo_csv_file) as file:
@@ -62,7 +68,14 @@ def load_neos(neo_csv_path):
 
 
 def extract_json(cad_json_path):
+    """Extract approach data from JSON file.
 
+    Args:
+        cad_json_path: File path to the JSON data file for close approaches.
+
+    Returns:
+        approaches: A list of close approaches extracted from the data file
+    """
     approaches = []
 
     with open(cad_json_path) as json_file:
@@ -91,7 +104,6 @@ def load_approaches(cad_json_path):
     :param cad_json_path: A path to a JSON file containing data about close approaches.
     :return: A collection of `CloseApproach`es.
     """
-
     approaches = extract_json(cad_json_path)
 
     return approaches

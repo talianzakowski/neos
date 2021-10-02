@@ -60,7 +60,6 @@ class NearEarthObject:
 
         :param info: A zip object of data values [0] and respective column names [1]
         """
-
         self.hazardous = False
         for item in zipped_item:
             data = item[0]
@@ -95,6 +94,7 @@ class NearEarthObject:
         self.approaches = []
 
     def neaten_name(self, name):
+        """Remove spurious characters from name."""
         first = name.lstrip('"')
         second = first.rstrip('"')
         third = second.lstrip()
@@ -109,13 +109,13 @@ class NearEarthObject:
 
     def __str__(self):
         """Return `str(self)`."""
-
         return f"NEO: Name: {self.name} Designation: {self.designation} \
                  Diameter: {self.diameter} Hazardous: {self.hazardous}"
 
     def __repr__(self):
-        """Return `repr(self)`, a computer-readable string representation
-           of this object.
+        """Return `repr(self)`.
+
+        A computer-readable string representation of this object.
         """
         return (
             f"NearEarthObject(designation={self.designation!r},  \
@@ -124,7 +124,8 @@ class NearEarthObject:
         )
 
     def serialize(self):
-        """
+        """Create a dictionary representing the NEO in terms of required data.
+
         Return a map of relevant data items for the output CSV and JSON
 
         :return Map of this NEO coerced into strings
@@ -158,7 +159,6 @@ class CloseApproach:
 
         :param info: A zipped data, header iterable representing a JSON close approach
         """
-
         self.magnitude = 0.0
 
         for pair in close_approach:
@@ -217,12 +217,10 @@ class CloseApproach:
         formatted string that can be used in human-readable representations and
         in serialization to CSV and JSON files.
         """
-
         return datetime_to_str(self.time)
 
     def __str__(self):
         """Return `str(self)`."""
-
         return f"CloseApproach Velocity: {self.velocity} km/h Distance: {self.distance} AUs {self.time_str} NEO: {self.neo}"
 
     def __repr__(self):
@@ -234,8 +232,7 @@ class CloseApproach:
         )
 
     def serialize(self):
-        """Return a dictionary representation of the Close Approach"""
-
+        """Return a dictionary representation of the Close Approach."""
         approach = {}
 
         approach["datetime_utc"] = datetime_to_str(self.time)

@@ -71,30 +71,34 @@ class AttributeFilter:
         raise UnsupportedCriterionError
 
     def __repr__(self):
+        """Return machine representation."""
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
 
 
 class ApproachVelocityFilter(AttributeFilter):
-    """A filter to allow approach velocity filtering"""
+    """A filter to allow approach velocity filtering."""
 
     @classmethod
     def get(cls, approach):
+        """Return approach velocity."""
         return approach.velocity
 
 
 class DistanceFilter(AttributeFilter):
-    """A filter to allow approach distance filtering"""
+    """A filter to allow approach distance filtering."""
 
     @classmethod
     def get(cls, approach):
+        """Return approach distance."""
         return approach.distance
 
 
 class DiameterFilter(AttributeFilter):
-    """A filter to allow approach distance filtering"""
+    """A filter to allow approach distance filtering."""
 
     @classmethod
     def get(cls, approach):
+        """Return approach neo diameter."""
         if math.isnan(approach.neo.diameter):
             return float("nan")
         else:
@@ -102,26 +106,29 @@ class DiameterFilter(AttributeFilter):
 
 
 class HazardousFilter(AttributeFilter):
-    """A filter to allow approach neo is harardous filtering"""
+    """A filter to allow approach neo is harardous filtering."""
 
     @classmethod
     def get(cls, approach):
+        """Return approach hazardous flag."""
         return approach.neo.hazardous
 
 
 class AbsoluteDateFilter(AttributeFilter):
-    """A filter to allow absolute approach date filtering"""
+    """A filter to allow absolute approach date filtering."""
 
     @classmethod
     def get(cls, approach):
+        """Return approach time as date."""
         return approach.time.date()
 
 
 class DateFilter(AttributeFilter):
-    """A filter to allow approach date filtering"""
+    """A filter to allow approach date filtering."""
 
     @classmethod
     def get(cls, approach):
+        """Return approach time as date."""
         return approach.time.date()
 
 
@@ -221,7 +228,6 @@ def limit(iterator, n=None):
     :param n: The maximum number of values to produce.
     :yield: The first (at most) `n` values from the iterator.
     """
-
     if n == 0 or n is None:
         return iterator
     else:

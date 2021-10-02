@@ -59,12 +59,13 @@ class NEODatabase:
                 neo.approaches.append(approach)
 
     def create_neo_designation_index_map(self):
-        """
-        Method to create a designation to entry index mapping for neos to enable faster searching due
-        to having a mapping where the designation will act as key and the value the index
-        into the _neos data list, which can then be looked up
-        """
+        """Create a mapping of designation to index.
 
+        Method to create a designation to entry index mapping for neos to enable faster searching due to having a mapping where the designation will act as key and the value the index into the _neos data list, which can then be looked up. This should result to O(1) lookup time.
+
+        Returns:
+            dict: Map of designation to index
+        """
         designation_to_index_map = {}
 
         for idx, neo in enumerate(self._neos):
@@ -73,12 +74,12 @@ class NEODatabase:
         return designation_to_index_map
 
     def create_neo_name_index_map(self):
-        """
+        """Create a neo name to neo index.
+
         Method to create a name to entry index mapping for neos to enable faster searching due
         to having a mapping where the designation will act as key and the value the index
         into the _neos data list, which can then be looked up
         """
-
         name_to_index_map = {}
 
         for idx, neo in enumerate(self._neos):
@@ -99,7 +100,6 @@ class NEODatabase:
         :param designation: The primary designation of the NEO to search for.
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
-
         data_index = self.designation_index_map.get(designation, None)
 
         if data_index is not None:
@@ -142,7 +142,6 @@ class NEODatabase:
         :param filters: A collection of filters capturing user-specified criteria.
         :return: A stream of matching `CloseApproach` objects.
         """
-
         if len(filters) == 0:
             for approach in self._approaches:
                 yield approach
