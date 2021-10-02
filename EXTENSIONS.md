@@ -6,4 +6,4 @@
 
 3. Opted to subclass AttributeFilter to create a number of specialised filters which extract the relevant data value in question from CloseApproach objects and associated NEOs.
 
-4. Added to tests
+
